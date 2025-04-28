@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  fullName      String
+  email         String    @unique
+  password      String
+  phoneNumber   String?
+  userType      UserType
+  birthDate     DateTime?
+  address       String?
+  createdAt     DateTime  @default(now())
+
+  caregiverProfile CaregiverProfile?
+  caregiverAppointments Appointment[] @relation("CaregiverAppointments")
+  contractorAppointments Appointment[] @relation("ContractorAppointments")
+  caregiverReviews Review[] @relation("CaregiverReviews")
+  contractorReviews Review[] @relation("ContractorReviews")
+}
+
+model CaregiverProfile {
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  experience     String?
+  specializations String?
+  availability   Json?
+  createdAt      DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Appointment {
+  id               String    @id @default(uuid())
+  caregiverId      String
+  contractorId     String
+  appointmentDate  DateTime
+  appointmentTime  DateTime
+  status           AppointmentStatus @default(pending)
+  createdAt        DateTime  @default(now())
+
+  caregiver User @relation("CaregiverAppointments", fields: [caregiverId], references: [id], onDelete: Cascade)
+  contractor User @relation("ContractorAppointments", fields: [contractorId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id           String    @id @default(uuid())
+  caregiverId  String
+  contractorId String
+  rating       Int
+  comment      String?
+  createdAt    DateTime  @default(now())
+
+  caregiver User @relation("CaregiverReviews", fields: [caregiverId], references: [id], onDelete: Cascade)
+  contractor User @relation("ContractorReviews", fields: [contractorId], references: [id], onDelete: Cascade)
+}
+
+enum UserType {
+  family
+  caregiver
+}
+
+enum AppointmentStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
+
