@@ -26,14 +26,26 @@ model User {
 }
 
 model CaregiverProfile {
-  id             String    @id @default(uuid())
-  userId         String    @unique
-  experience     String?
-  specializations String?
-  availability   Json?
-  createdAt      DateTime  @default(now())
+  id              String        @id @default(uuid())
+  userId          String        @unique
+  experience      String?
+  specializations String[]
+  availability    Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availabilities Availability[]
+}
+
+model Availability {
+  id                  String           @id @default(uuid())
+  caregiverProfileId  String
+  dayOfWeek           Int
+  startTime           DateTime
+  endTime             DateTime
+
+  caregiverProfile    CaregiverProfile @relation(fields: [caregiverProfileId], references: [id], onDelete: Cascade)
 }
 
 model Appointment {
@@ -42,7 +54,7 @@ model Appointment {
   contractorId     String
   appointmentDate  DateTime
   appointmentTime  DateTime
-  status           AppointmentStatus @default(pending)
+  status           AppointmentStatus @default(PENDING)
   createdAt        DateTime  @default(now())
 
   caregiver User @relation("CaregiverAppointments", fields: [caregiverId], references: [id], onDelete: Cascade)
@@ -62,14 +74,13 @@ model Review {
 }
 
 enum UserType {
-  family
-  caregiver
+  FAMILY
+  CAREGIVER
 }
 
 enum AppointmentStatus {
-  pending
-  confirmed
-  cancelled
-  completed
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }
-

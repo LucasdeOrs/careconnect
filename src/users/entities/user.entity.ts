@@ -4,10 +4,11 @@ export class User {
   id: string;
   fullName: string;
   email: string;
-  phoneNumber?: string;
+  password: string;
+  phoneNumber: string | null;
   userType: UserType;
-  birthDate?: Date;
-  address?: string;
+  birthDate: Date | null;
+  address: string | null;
   createdAt: Date;
 }
 
@@ -15,9 +16,10 @@ export class UserResponseDto {
   id: string;
   fullName: string;
   email: string;
-  phoneNumber?: string;
+  password: string;
+  phoneNumber: string | null;
   userType: UserType;
-  birthDate?: Date;
-  address?: string;
+  birthDate: Date | null;
+  address: string | null;
   createdAt: Date;
 }
