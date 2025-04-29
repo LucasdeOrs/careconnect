@@ -12,7 +12,7 @@ describe('UsersService', () => {
     fullName: 'John Doe',
     email: 'john@example.com',
     password: 'securepassword',
-    userType: 'family' as const,
+    userType: 'FAMILY' as const,
     createdAt: new Date(),
   };
 
@@ -20,7 +20,7 @@ describe('UsersService', () => {
     fullName: 'John Doe',
     email: 'john@example.com',
     password: 'securepassword',
-    userType: 'family',
+    userType: 'FAMILY',
   };
 
   const updateUserDto: UpdateUserDto = {

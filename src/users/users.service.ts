@@ -5,8 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { PasswordService } from 'src/common/service/password.service';
 import { UserResponseDto } from './entities/user.entity';
-import { toUserResponseDto } from './mapper/user-response.mapper';
-import { handlePrismaError } from 'src/prisma/utils/handle-prisma-errors.util';
+import { handlePrismaError } from 'src/prisma/utils/prisma-error.util';
+import { toUserResponseDto } from './mapper/user.mapper';
 
 @Injectable()
 export class UsersService {

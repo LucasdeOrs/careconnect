@@ -42,4 +42,13 @@ export class UsersController {
   getProfile(@CurrentUser() user: CurrentUserInterface) {
     return user;
   }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  updateMe(
+  @CurrentUser('userId') userId: string,
+  @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(userId, updateUserDto);
+}
 }
