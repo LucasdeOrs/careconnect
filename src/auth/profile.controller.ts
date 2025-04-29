@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser, CurrentUserId } from '../auth/decorators/current-user.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CurrentUserInterface } from './interface/current-user.interface';
 
 @Controller('profile')
@@ -13,7 +13,7 @@ export class ProfileController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getMyProfile(@CurrentUserId() userId: string) {
+  getMyProfile(@CurrentUser('userId') userId: string) {
     return { userId };
   }
 }

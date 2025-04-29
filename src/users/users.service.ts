@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
-import { Prisma } from '@prisma/client';
 import { PasswordService } from 'src/common/service/password.service';
 import { UserResponseDto } from './entities/user.entity';
+import { toUserResponseDto } from './mapper/user-response.mapper';
+import { handlePrismaError } from 'src/prisma/utils/handle-prisma-errors.util';
 
 @Injectable()
 export class UsersService {
@@ -25,15 +26,15 @@ export class UsersService {
         },
       });
 
-      return this.toResponseDto(user);
+      return toUserResponseDto(user);
     } catch (error) {
-      this.handlePrismaError(error, 'criar');
+      handlePrismaError(error, 'criar');
     }
   }
 
   async findAll(): Promise<UserResponseDto[]> {
     const users = await this.prisma.user.findMany();
-    return users.map((user) => this.toResponseDto(user));
+    return users.map((user) => toUserResponseDto(user));
   }
 
   async findOne(id: string): Promise<UserResponseDto> {
@@ -45,7 +46,7 @@ export class UsersService {
       throw new NotFoundException('Usuário não encontrado.');
     }
 
-    return this.toResponseDto(user);
+    return toUserResponseDto(user);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
@@ -61,9 +62,9 @@ export class UsersService {
         data,
       });
 
-      return this.toResponseDto(user);
+      return toUserResponseDto(user);
     } catch (error) {
-      this.handlePrismaError(error, 'atualizar');
+      handlePrismaError(error, 'atualizar');
     }
   }
 
@@ -73,27 +74,10 @@ export class UsersService {
         where: { id },
       });
 
-      return this.toResponseDto(user);
+      return toUserResponseDto(user);
     } catch (error) {
-      this.handlePrismaError(error, 'remover');
+      handlePrismaError(error, 'remover');
     }
-  }
-
-  private toResponseDto(user: User): UserResponseDto {
-    const { password: _, ...rest } = user;
-    return rest as UserResponseDto;
-  }
-
-  private handlePrismaError(error: unknown, action: string): never {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2002') {
-        throw new BadRequestException('Usuário com essas credenciais já existe.');
-      }
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Usuário não encontrado para ${action}.`);
-      }
-    }
-    throw error;
   }
 
   async findByEmail(email: string): Promise<User | null> {
